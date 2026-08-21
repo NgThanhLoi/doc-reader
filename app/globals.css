@@ -187,17 +187,23 @@ a:hover { text-decoration: underline; }
 }
 .set-row { margin-bottom: 14px; }
 .set-row > label { display: block; font-size: 0.85rem; opacity: 0.75; margin-bottom: 6px; }
-.theme-dots { display: flex; gap: 10px; }
+.theme-dots { display: flex; gap: 8px; flex-wrap: wrap; }
 .dot {
-  width: 32px; height: 32px;
+  width: 30px; height: 30px;
   border-radius: 50%;
   border: 2px solid color-mix(in srgb, var(--fg) 30%, transparent);
   cursor: pointer;
+  flex-shrink: 0;
 }
 .dot.light { background: #fafafa; }
 .dot.sepia { background: #f4ecd8; }
 .dot.dark { background: #14171c; }
+.dot.paper { background: #ffffff; }
+.dot.nightBlue { background: #0f1b2d; }
+.dot.green { background: #e3ece1; }
+.dot.gray { background: #e8e8e8; }
 .dot.active { outline: 2px solid var(--accent); outline-offset: 2px; }
+.theme-name { display: block; font-size: 0.8rem; opacity: 0.6; margin-top: 6px; }
 .colors label { display: inline-flex; align-items: center; gap: 8px; margin-right: 16px; }
 .settings-panel input[type='range'] { width: 100%; }
 .settings-panel select {

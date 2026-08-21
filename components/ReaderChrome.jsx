@@ -17,11 +17,32 @@ const THEMES = {
   light: { bg: '#fafafa', fg: '#24292f' },
   sepia: { bg: '#f4ecd8', fg: '#5b4636' },
   dark:  { bg: '#14171c', fg: '#cfd6dd' },
+  paper: { bg: '#ffffff', fg: '#1a1a1a' },   // giấy trắng thuần
+  nightBlue: { bg: '#0f1b2d', fg: '#aebfd4' }, // xanh đêm
+  green: { bg: '#e3ece1', fg: '#2c3b2d' },   // xanh lá dịu (bảo vệ mắt)
+  gray: { bg: '#e8e8e8', fg: '#3a3a3a' },    // xám trung tính
 };
 
+// Popular reader themes (label + colors shown in the picker)
+export const THEME_LIST = [
+  { id: 'light', label: 'Sáng' },
+  { id: 'sepia', label: 'Sepia' },
+  { id: 'dark', label: 'Tối' },
+  { id: 'paper', label: 'Giấy' },
+  { id: 'nightBlue', label: 'Xanh đêm' },
+  { id: 'green', label: 'Xanh bảo vệ mắt' },
+  { id: 'gray', label: 'Xám' },
+];
+
 const FONTS = [
-  { label: 'Serif', value: "Georgia, 'Times New Roman', serif" },
-  { label: 'Sans-serif', value: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" },
+  { label: 'Literata (Serif)', value: "var(--f-literata), Georgia, serif" },
+  { label: 'Merriweather (Serif)', value: "var(--f-merriweather), Georgia, serif" },
+  { label: 'Lora (Serif)', value: "var(--f-lora), Georgia, serif" },
+  { label: 'Noto Serif', value: "var(--f-notoserif), Georgia, serif" },
+  { label: 'Roboto Slab (Slab)', value: "var(--f-robotoslab), Georgia, serif" },
+  { label: 'Inter (Sans)', value: "var(--f-inter), system-ui, sans-serif" },
+  { label: 'Be Vietnam Pro (Sans)', value: "var(--f-bevietnam), system-ui, sans-serif" },
+  { label: 'Hệ thống', value: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" },
   { label: 'Monospace', value: "ui-monospace, 'SF Mono', Consolas, monospace" },
 ];
 
@@ -94,21 +115,26 @@ export default function ReaderChrome({ title, chapterTitle, prevHref, nextHref, 
           <div className="set-row">
             <label>Chủ đề</label>
             <div className="theme-dots">
-              {['light', 'sepia', 'dark'].map((t) => (
+              {THEME_LIST.map((t) => (
                 <button
-                  key={t}
-                  className={`dot ${t} ${s.theme === t ? 'active' : ''}`}
-                  onClick={() => setS((p) => ({ ...p, theme: t }))}
-                  aria-label={t}
+                  key={t.id}
+                  className={`dot ${t.id} ${s.theme === t.id ? 'active' : ''}`}
+                  title={t.label}
+                  aria-label={t.label}
+                  onClick={() => setS((p) => ({ ...p, theme: t.id }))}
                 />
               ))}
               <button
                 className={`dot custom ${s.theme === 'custom' ? 'active' : ''}`}
                 style={{ background: s.customBg }}
+                title="Màu tự chọn"
                 onClick={() => setS((p) => ({ ...p, theme: 'custom' }))}
                 aria-label="màu tùy chọn"
               />
             </div>
+            <span className="theme-name">
+              {s.theme === 'custom' ? 'Tùy chọn' : (THEME_LIST.find((t) => t.id === s.theme)?.label || s.theme)}
+            </span>
           </div>
 
           {s.theme === 'custom' && (
