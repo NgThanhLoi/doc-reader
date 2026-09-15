@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { meta } from '../lib/book';
-import { toc } from '../lib/toc';
+import { BASE, getBook } from '../lib/books';
 import ReaderChrome from './ReaderChrome';
 
 export default function ReaderClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const book = getBook(searchParams.get('b'));
+  const { toc, meta, dir, id: bookId } = book;
   const rawId = searchParams.get('c');
   const parsedId = parseInt(rawId, 10);
   const id = Number.isInteger(parsedId) ? parsedId : null;
@@ -21,38 +22,40 @@ export default function ReaderClient() {
     if (id === null || id < 0 || id >= toc.length) return;
     let alive = true;
     setLoading(true);
-    fetch(`/data/ch${id}.json`)
+    fetch(`${BASE}/data/${dir}ch${id}.json`)
       .then((r) => r.json())
       .then((j) => {
         if (!alive) return;
         setChap(j);
         setLoading(false);
         document.title = `${j.t} — ${meta.title}`;
-        localStorage.setItem('reader:progress', JSON.stringify({ last: id }));
+        localStorage.setItem(`reader:progress:${bookId}`, JSON.stringify({ last: id }));
         window.scrollTo(0, 0);
       });
     return () => { alive = false; };
-  }, [id]);
+  }, [id, bookId]);
+
+  const link = (c) => `${BASE}/read/?b=${bookId}&c=${c}`;
 
   if (id === null || id < 0 || id >= toc.length)
     return (
       <main style={{ padding: 24 }}>
         <p>Không tìm thấy chương.</p>
-        <Link href="/toc/">← Danh sách chương</Link>
+        <Link href={`/toc/?b=${bookId}`}>← Danh sách chương</Link>
       </main>
     );
 
   const prev = id > 0 ? id - 1 : null;
   const next = id < toc.length - 1 ? id + 1 : null;
-  const go = (n) => router.push(`/read/?c=${n}`);
+  const go = (n) => router.push(link(n));
 
   return (
     <ReaderChrome
       title={meta.title}
       chapterTitle={toc[id].t}
-      prevHref={prev !== null ? `/read/?c=${prev}` : null}
-      nextHref={next !== null ? `/read/?c=${next}` : null}
-      tocHref="/toc/"
+      prevHref={prev !== null ? link(prev) : null}
+      nextHref={next !== null ? link(next) : null}
+      tocHref={`/toc/?b=${bookId}`}
       homeHref="/"
     >
       {loading || !chap ? (
@@ -65,11 +68,11 @@ export default function ReaderClient() {
           ))}
           <nav className="end-nav">
             {prev !== null && (
-              <a href={`/read/?c=${prev}`} onClick={(e) => { e.preventDefault(); go(prev); }}>← Chương trước</a>
+              <a href={link(prev)} onClick={(e) => { e.preventDefault(); go(prev); }}>← Chương trước</a>
             )}
             <span> </span>
             {next !== null && (
-              <a href={`/read/?c=${next}`} onClick={(e) => { e.preventDefault(); go(next); }}>Chương sau →</a>
+              <a href={link(next)} onClick={(e) => { e.preventDefault(); go(next); }}>Chương sau →</a>
             )}
           </nav>
         </article>

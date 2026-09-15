@@ -1,22 +1,34 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { meta } from '../../lib/book';
-import { toc } from '../../lib/toc';
+import { useSearchParams } from 'next/navigation';
+import { getBook } from '../../lib/books';
 
-export default function Toc() {
+export default function TocPage() {
+  return (
+    <Suspense fallback={<main className="toc-page"><p>Đang tải…</p></main>}>
+      <Toc />
+    </Suspense>
+  );
+}
+
+function Toc() {
+  const searchParams = useSearchParams();
+  const book = getBook(searchParams.get('b'));
+  const { toc, meta, id: bookId } = book;
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
   const perPage = 100;
   const [progress, setProgress] = useState(null);
 
   useEffect(() => {
-    const raw = localStorage.getItem('reader:progress');
+    const raw = localStorage.getItem(`reader:progress:${bookId}`);
     if (raw) {
       try { setProgress(JSON.parse(raw)); } catch {}
     }
-  }, []);
+  }, [bookId]);
 
   const filtered = q
     ? toc.filter((c) => c.t.toLowerCase().includes(q.toLowerCase()))
@@ -29,7 +41,7 @@ export default function Toc() {
     <main className="toc-page">
       <header className="topbar">
         <Link href="/" className="back">← Trang chủ</Link>
-        <h1>Danh sách chương ({toc.length})</h1>
+        <h1>{meta.title} — Danh sách chương ({toc.length})</h1>
       </header>
       <input
         className="search"
@@ -39,7 +51,7 @@ export default function Toc() {
       />
       {progress && (
         <div className="continue-bar">
-          <Link href={`/read/?c=${progress.last}`}>
+          <Link href={`/read/?b=${bookId}&c=${progress.last}`}>
             Đọc tiếp: {toc[progress.last]?.t || `Chương ${progress.last}`}
           </Link>
         </div>
@@ -47,7 +59,7 @@ export default function Toc() {
       <ol className="toc-list">
         {pageItems.map((c) => (
           <li key={c.i} className={progress && progress.last === c.i ? 'current' : ''}>
-            <Link href={`/read/?c=${c.i}`}>{c.t}</Link>
+            <Link href={`/read/?b=${bookId}&c=${c.i}`}>{c.t}</Link>
           </li>
         ))}
       </ol>

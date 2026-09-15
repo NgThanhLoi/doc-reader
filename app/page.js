@@ -1,21 +1,22 @@
 import Link from 'next/link';
 import ContinueButton from '../components/ContinueButton';
-import { meta } from '../lib/book';
-import { toc } from '../lib/toc';
+import { BOOKS } from '../lib/books';
 
 export default function Home() {
   return (
     <main className="home">
-      <div className="hero">
-        <h1>{meta.title}</h1>
-        <p className="author">{meta.author}</p>
-        <p className="desc">{meta.description}</p>
-        <div className="cta">
-          <Link className="btn primary" href="/read/?c=2">Đọc từ đầu</Link>
-          <ContinueButton />
-          <Link className="btn" href="/toc/">Danh sách chương</Link>
+      {Object.values(BOOKS).map((b) => (
+        <div className="hero" key={b.id}>
+          <h1>{b.meta.title}</h1>
+          <p className="author">{b.meta.author}</p>
+          <p className="desc">{b.meta.description}</p>
+          <div className="cta">
+            <Link className="btn primary" href={`/read/?b=${b.id}&c=${b.start}`}>Đọc từ đầu</Link>
+            <ContinueButton bookId={b.id} toc={b.toc} />
+            <Link className="btn" href={`/toc/?b=${b.id}`}>Danh sách chương</Link>
+          </div>
         </div>
-      </div>
+      ))}
     </main>
   );
 }
