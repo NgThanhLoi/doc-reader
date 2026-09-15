@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { BASE, getBook } from '../lib/books';
+import { basePath, getBook } from '../lib/books';
 import ReaderChrome from './ReaderChrome';
 
 export default function ReaderClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const book = getBook(searchParams.get('b'));
+  const bp = basePath();
   const { toc, meta, dir, id: bookId } = book;
   const rawId = searchParams.get('c');
   const parsedId = parseInt(rawId, 10);
@@ -22,7 +23,7 @@ export default function ReaderClient() {
     if (id === null || id < 0 || id >= toc.length) return;
     let alive = true;
     setLoading(true);
-    fetch(`${BASE}/data/${dir}ch${id}.json`)
+    fetch(`${bp}/data/${dir}ch${id}.json`)
       .then((r) => r.json())
       .then((j) => {
         if (!alive) return;
@@ -35,13 +36,13 @@ export default function ReaderClient() {
     return () => { alive = false; };
   }, [id, bookId]);
 
-  const link = (c) => `${BASE}/read/?b=${bookId}&c=${c}`;
+  const link = (c) => `${bp}/read/?b=${bookId}&c=${c}`;
 
   if (id === null || id < 0 || id >= toc.length)
     return (
       <main style={{ padding: 24 }}>
         <p>Không tìm thấy chương.</p>
-        <Link href={`/toc/?b=${bookId}`}>← Danh sách chương</Link>
+        <Link href={`${bp}/toc/?b=${bookId}`}>← Danh sách chương</Link>
       </main>
     );
 
@@ -55,8 +56,8 @@ export default function ReaderClient() {
       chapterTitle={toc[id].t}
       prevHref={prev !== null ? link(prev) : null}
       nextHref={next !== null ? link(next) : null}
-      tocHref={`/toc/?b=${bookId}`}
-      homeHref="/"
+      tocHref={`${bp}/toc/?b=${bookId}`}
+      homeHref={`${bp}/`}
     >
       {loading || !chap ? (
         <p className="loading">Đang tải chương…</p>

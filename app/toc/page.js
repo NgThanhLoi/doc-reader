@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { getBook } from '../../lib/books';
+import { getBook, basePath } from '../../lib/books';
 
 export default function TocPage() {
   return (
@@ -17,6 +17,7 @@ export default function TocPage() {
 function Toc() {
   const searchParams = useSearchParams();
   const book = getBook(searchParams.get('b'));
+  const bp = basePath();
   const { toc, meta, id: bookId } = book;
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
@@ -40,7 +41,7 @@ function Toc() {
   return (
     <main className="toc-page">
       <header className="topbar">
-        <Link href="/" className="back">← Trang chủ</Link>
+        <Link href={`${bp}/`} className="back">← Trang chủ</Link>
         <h1>{meta.title} — Danh sách chương ({toc.length})</h1>
       </header>
       <input
@@ -51,7 +52,7 @@ function Toc() {
       />
       {progress && (
         <div className="continue-bar">
-          <Link href={`/read/?b=${bookId}&c=${progress.last}`}>
+          <Link href={`${bp}/read/?b=${bookId}&c=${progress.last}`}>
             Đọc tiếp: {toc[progress.last]?.t || `Chương ${progress.last}`}
           </Link>
         </div>
@@ -59,7 +60,7 @@ function Toc() {
       <ol className="toc-list">
         {pageItems.map((c) => (
           <li key={c.i} className={progress && progress.last === c.i ? 'current' : ''}>
-            <Link href={`/read/?b=${bookId}&c=${c.i}`}>{c.t}</Link>
+            <Link href={`${bp}/read/?b=${bookId}&c=${c.i}`}>{c.t}</Link>
           </li>
         ))}
       </ol>

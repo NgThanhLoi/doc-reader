@@ -11,9 +11,9 @@ export default function Home() {
           <p className="author">{b.meta.author}</p>
           <p className="desc">{b.meta.description}</p>
           <div className="cta">
-            <Link className="btn primary" href={`/read/?b=${b.id}&c=${b.start}`}>Đọc từ đầu</Link>
+            <Link className="btn primary" href={`./read/?b=${b.id}&c=${b.start}`}>Đọc từ đầu</Link>
             <ContinueButton bookId={b.id} toc={b.toc} />
-            <Link className="btn" href={`/toc/?b=${b.id}`}>Danh sách chương</Link>
+            <Link className="btn" href={`./toc/?b=${b.id}`}>Danh sách chương</Link>
           </div>
         </div>
       ))}

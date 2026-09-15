@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { basePath } from '../lib/books';
 
 export default function ContinueButton({ bookId, toc }) {
   const [last, setLast] = useState(null);
+  const bp = basePath();
 
   useEffect(() => {
     try {
@@ -15,7 +17,7 @@ export default function ContinueButton({ bookId, toc }) {
 
   if (last === null) return null;
   return (
-    <Link className="btn" href={`/read/?b=${bookId}&c=${last}`}>
+    <Link className="btn" href={`${bp}/read/?b=${bookId}&c=${last}`}>
       Tiếp tục: {toc[last]?.t || `Chương ${last}`}
     </Link>
   );
